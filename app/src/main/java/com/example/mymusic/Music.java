@@ -40,6 +40,7 @@ public class Music extends AppCompatActivity{
     ListView mylist;
     List<Song> list;
     ArrayList<String> songName=new ArrayList<>();
+    Button bn;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

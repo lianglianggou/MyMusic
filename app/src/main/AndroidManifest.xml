@@ -20,6 +20,10 @@
         <activity
             android:name=".find"
             android:label="@string/title_activity_find"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".love"
+            android:label="@string/title_activity_love"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

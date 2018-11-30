@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MyMusic</string>
     <string name="title_activity_find">find</string>
+    <string name="title_activity_love">love</string>
 </resources>
