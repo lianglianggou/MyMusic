@@ -41,26 +41,19 @@ public class find extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.find:
-                final EditText et = new EditText(this);
+            case R.id.back:
+
 //                 final EditText et = new EditText(this);
                 //final String[] where1={date.get(MID)};
                 //final int c=MID;
-                et.setText("");
-                new AlertDialog.Builder(this).setTitle("请输入：")
-                        .setIcon(android.R.drawable.sym_def_app_icon)
-                        .setView(et)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+
+
                                 Intent intent =
                                         new Intent(find.this,
                                                 Music.class);
-                                startActivity(intent);
-                                finish();
 
-                            }
-                        }).setNegativeButton("取消", null).show();
+
+
 //                Intent intent = new Intent(MainActivity.this, CheckActivity.class);//实现点击菜单选项启动相应活动
 //                startActivity(intent);
                 //checkDialog();

@@ -90,8 +90,9 @@ public class Music extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         mylist = (ListView) findViewById(R.id.mylist);
-        dbmemo=new MyDatabaseHelper(this,"love.db",null,1);
-        /*bn=(Button)findViewById(R.id.create);创建数据库
+        dbmemo=new MyDatabaseHelper(this,"love1.db",null,1);
+        /*
+        bn=(Button)findViewById(R.id.create);
         bn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -115,7 +116,7 @@ public class Music extends AppCompatActivity{
 
     }
     public class MyDatabaseHelper extends SQLiteOpenHelper {
-        public static final String CREATE_MEMO = "create table memo ("
+        public static final String CREATE_LOVE = "create table love1 ("
                 + "song text"+")";
 
         private Context mContext;
@@ -128,7 +129,7 @@ public class Music extends AppCompatActivity{
         }
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL(CREATE_MEMO);
+            db.execSQL(CREATE_LOVE);
             Toast.makeText(mContext, "Create succeeded", Toast.LENGTH_SHORT).show();
         }
         @Override
@@ -148,7 +149,7 @@ public class Music extends AppCompatActivity{
                 menu.add(0, 3, 0, "暂停");
                 menu.add(0, 4, 0, "上一曲");
                 menu.add(0, 5, 0, "下一曲");
-                menu.add(0, 6, 0, "下一曲");
+                menu.add(0, 6, 0, "收藏");
             }
         });
     }
@@ -187,13 +188,25 @@ public class Music extends AppCompatActivity{
                 play(p2);
                 break;
             case 6:
-                final EditText et = new EditText(this);
-                String a=et.getText().toString();
-                SQLiteDatabase db=dbmemo.getWritableDatabase();
-                ContentValues values=new ContentValues();
-                values.put("song",a);
-                db.insert("love",null,values);
-                Toast.makeText(Music.this,"收藏成功",Toast.LENGTH_SHORT).show();
+
+                String a=songName.get(MID);
+                String[] where={a};
+
+                SQLiteDatabase db = dbmemo.getWritableDatabase();
+                // Cursor cursor = db.query("WordTable",null,null,null,null,null,null);
+                Cursor cursor =  db.query("love1",new String[]{"song"},"song=?",where,null,null,null);
+
+                if(cursor.moveToFirst()){
+                    Toast.makeText(Music.this,"已收藏",Toast.LENGTH_SHORT).show();
+                    cursor.close();
+
+                }else{
+
+                    ContentValues values=new ContentValues();
+                    values.put("song",a);
+                    db.insert("love1",null,values);
+                    Toast.makeText(Music.this,"收藏成功",Toast.LENGTH_SHORT).show();}
+
                 break;
             default:
                 break;
