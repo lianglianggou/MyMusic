@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:windowSoftInputMode="stateHidden|adjustPan">
+
     <TextView
         android:text="音乐播放器"
         android:textSize="50dp"

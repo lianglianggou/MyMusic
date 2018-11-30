@@ -3,6 +3,9 @@
     <item
         android:id="@+id/find"
         android:title="查找" />
+    <item
+        android:id="@+id/love"
+        android:title="收藏夹" />
 
 
 </menu>

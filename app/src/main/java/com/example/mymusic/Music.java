@@ -10,6 +10,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -40,6 +41,7 @@ public class Music extends AppCompatActivity{
     ListView mylist;
     List<Song> list;
     ArrayList<String> songName=new ArrayList<>();
+    MyDatabaseHelper dbmemo;
     Button bn;
 
     @Override
@@ -50,6 +52,7 @@ public class Music extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()){
             case R.id.find:
                 final EditText et = new EditText(this);
@@ -71,11 +74,11 @@ public class Music extends AppCompatActivity{
 
                             }
                         }).setNegativeButton("取消",null).show();
-//                Intent intent = new Intent(MainActivity.this, CheckActivity.class);//实现点击菜单选项启动相应活动
-//                startActivity(intent);
-                //checkDialog();
-//                Toast.makeText(this,"check",Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.love:
+                                Intent intent=new Intent(Music.this,love.class);
+                                startActivity(intent);
+
 
             default:
         }
@@ -87,7 +90,15 @@ public class Music extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         mylist = (ListView) findViewById(R.id.mylist);
+        dbmemo=new MyDatabaseHelper(this,"love.db",null,1);
+        /*bn=(Button)findViewById(R.id.create);创建数据库
+        bn.setOnClickListener(new View.OnClickListener(){
 
+            @Override
+            public void onClick(View view) {
+                dbmemo.getWritableDatabase();
+            }
+        });*/
         list = new ArrayList<>();
 
         list = Utils.getmusic(this);
@@ -103,6 +114,28 @@ public class Music extends AppCompatActivity{
         ItemOnLongClick1();
 
     }
+    public class MyDatabaseHelper extends SQLiteOpenHelper {
+        public static final String CREATE_MEMO = "create table memo ("
+                + "song text"+")";
+
+        private Context mContext;
+        public MyDatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+
+            super(context, name, factory, version);
+
+            mContext = context;
+
+        }
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(CREATE_MEMO);
+            Toast.makeText(mContext, "Create succeeded", Toast.LENGTH_SHORT).show();
+        }
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        }
+    }
     private void ItemOnLongClick1() {
         mylist = (ListView) findViewById(R.id.mylist);
         mylist.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
@@ -115,6 +148,7 @@ public class Music extends AppCompatActivity{
                 menu.add(0, 3, 0, "暂停");
                 menu.add(0, 4, 0, "上一曲");
                 menu.add(0, 5, 0, "下一曲");
+                menu.add(0, 6, 0, "下一曲");
             }
         });
     }
@@ -151,6 +185,15 @@ public class Music extends AppCompatActivity{
             case 5:
                 String p2 = list.get(MID+1).path;
                 play(p2);
+                break;
+            case 6:
+                final EditText et = new EditText(this);
+                String a=et.getText().toString();
+                SQLiteDatabase db=dbmemo.getWritableDatabase();
+                ContentValues values=new ContentValues();
+                values.put("song",a);
+                db.insert("love",null,values);
+                Toast.makeText(Music.this,"收藏成功",Toast.LENGTH_SHORT).show();
                 break;
             default:
                 break;
