@@ -22,11 +22,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class love extends AppCompatActivity {
     MediaPlayer mediaPlayer = new MediaPlayer();
@@ -37,6 +40,10 @@ public class love extends AppCompatActivity {
     ArrayList<String> songName1=new ArrayList<>();
     MyDatabaseHelper dbmemo;
     Song s;
+    private boolean isSeekBarChanging;//互斥变量，防止进度条与定时器冲突。
+    private int currentPosition;//当前音乐播放的进度
+    private SeekBar seekBar;
+    private Timer timer;
     int count=0;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -48,28 +55,49 @@ public class love extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.back:
-
                 Intent intent =
                         new Intent(love.this,
                                 Music.class);
                 startActivity(intent);
                 finish();
-
-
 //                Intent intent = new Intent(MainActivity.this, CheckActivity.class);//实现点击菜单选项启动相应活动
 //                startActivity(intent);
                 //checkDialog();
 //                Toast.makeText(this,"check",Toast.LENGTH_SHORT).show();
                 break;
-
             default:
         }
         return true;
+    }
+    protected void onDestroy() {
+        mediaPlayer.release();
+        timer.cancel();
+        timer = null;
+        mediaPlayer = null;
+        super.onDestroy();
+    }
+    public class MySeekBar implements SeekBar.OnSeekBarChangeListener {
+
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                                      boolean fromUser) {
+        }
+
+        /*滚动时,应当暂停后台定时器*/
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            isSeekBarChanging = true;
+        }
+        /*滑动结束后，重新设置值*/
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            isSeekBarChanging = false;
+            mediaPlayer.seekTo(seekBar.getProgress());
+        }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_love);
+        seekBar = (SeekBar) findViewById(R.id.playSeekBar);
+        seekBar.setOnSeekBarChangeListener(new MySeekBar());
         dbmemo=new MyDatabaseHelper(this,"love1.db",null,1);
         mylist=(ListView) findViewById(R.id.mylist);
         SQLiteDatabase db=dbmemo.getWritableDatabase();
@@ -182,11 +210,23 @@ public class love extends AppCompatActivity {
             mediaPlayer.prepareAsync();
 //            调用音频的监听方法，音频准备完毕后响应该方法进行音乐播放
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    mp.seekTo(currentPosition);
+
+                    seekBar.setMax(mediaPlayer.getDuration());
                 }
             });
+            //监听播放时回调函数
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if(!isSeekBarChanging){
+                        seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                    }
+                }
+            },0,50);
 
         } catch (IOException e) {
             e.printStackTrace();

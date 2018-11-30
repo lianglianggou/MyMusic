@@ -13,8 +13,16 @@
     <ListView
         android:id="@+id/mylist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
     </ListView>
+
+    <SeekBar
+        android:id="@+id/playSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="29dp"
+        android:layout_marginLeft="3px"
+        android:layout_marginTop="5px" />
 
 </LinearLayout>
 

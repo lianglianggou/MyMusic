@@ -20,11 +20,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class find extends AppCompatActivity {
     MediaPlayer mediaPlayer = new MediaPlayer();
@@ -32,6 +35,10 @@ public class find extends AppCompatActivity {
     List<Song> list;
     ArrayList<String> songName=new ArrayList<>();
 
+    private boolean isSeekBarChanging;//互斥变量，防止进度条与定时器冲突。
+    private int currentPosition;//当前音乐播放的进度
+    private SeekBar seekBar;
+    private Timer timer;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -64,12 +71,36 @@ public class find extends AppCompatActivity {
         }
         return true;
     }
+    protected void onDestroy() {
+        mediaPlayer.release();
+        timer.cancel();
+        timer = null;
+        mediaPlayer = null;
+        super.onDestroy();
+    }
+    public class MySeekBar implements SeekBar.OnSeekBarChangeListener {
+
+        public void onProgressChanged(SeekBar seekBar, int progress,
+                                      boolean fromUser) {
+        }
+
+        /*滚动时,应当暂停后台定时器*/
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            isSeekBarChanging = true;
+        }
+        /*滑动结束后，重新设置值*/
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            isSeekBarChanging = false;
+            mediaPlayer.seekTo(seekBar.getProgress());
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find);
-
+        seekBar = (SeekBar) findViewById(R.id.playSeekBar);
+        seekBar.setOnSeekBarChangeListener(new MySeekBar());
 
         Intent intent = getIntent();
         String name = intent.getStringExtra("song");
@@ -158,11 +189,23 @@ public class find extends AppCompatActivity {
             mediaPlayer.prepareAsync();
 //            调用音频的监听方法，音频准备完毕后响应该方法进行音乐播放
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                    mp.seekTo(currentPosition);
+
+                    seekBar.setMax(mediaPlayer.getDuration());
                 }
             });
+            //监听播放时回调函数
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if(!isSeekBarChanging){
+                        seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                    }
+                }
+            },0,50);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -171,5 +214,4 @@ public class find extends AppCompatActivity {
 
     }
 }
-
 
