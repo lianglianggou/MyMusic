@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,6 +37,44 @@ public class Music extends AppCompatActivity{
     MediaPlayer mediaPlayer=new MediaPlayer();
     ListView mylist;
     List<Song> list;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.find:
+                final EditText et = new EditText(this);
+//                 final EditText et = new EditText(this);
+                //final String[] where1={date.get(MID)};
+                //final int c=MID;
+                et.setText("");
+                new AlertDialog.Builder(this).setTitle("请输入：")
+                        .setIcon(android.R.drawable.sym_def_app_icon)
+                        .setView(et)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String a=et.getText().toString();
+
+                            }
+                        }).setNegativeButton("取消",null).show();
+//                Intent intent = new Intent(MainActivity.this, CheckActivity.class);//实现点击菜单选项启动相应活动
+//                startActivity(intent);
+                //checkDialog();
+//                Toast.makeText(this,"check",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.add_item:
+
+                break;
+            default:
+        }
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,10 +98,11 @@ public class Music extends AppCompatActivity{
             public void onCreateContextMenu(ContextMenu menu, View v,
                                             ContextMenu.ContextMenuInfo menuInfo) {
                 menu.add(0, 0, 0, "播放");
-                menu.add(0, 1, 0, "修改");
-                menu.add(0, 2, 0, "上升");
-                menu.add(0, 3, 0, "置顶");
-
+                menu.add(0, 1, 0, "停止");
+                menu.add(0, 2, 0, "循环");
+                menu.add(0, 3, 0, "暂停");
+                menu.add(0, 4, 0, "上一曲");
+                menu.add(0, 5, 0, "下一曲");
             }
         });
     }
@@ -73,19 +113,32 @@ public class Music extends AppCompatActivity{
         int MID = (int) info.id;// 这里的info.id对应的就是数据库中_id的值
         switch (item.getItemId()) {
             case 0:
-                String p = list.get(1).path;//获得歌曲的地址
-
+                String p = list.get(MID).path;//获得歌曲的地址
                 play(p);
                 break;
 
             case 1:
-
+                mediaPlayer.stop();
                 break;
             case 2:
+                boolean loop1 = mediaPlayer.isLooping();
+                mediaPlayer.setLooping(!loop1);
 
                 break;
             case 3:
-
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }else{
+                    mediaPlayer.start();
+                }
+                break;
+            case 4:
+                String p1 = list.get(MID+1).path;
+                play(p1);
+                break;
+            case 5:
+                String p2 = list.get(MID-1).path;
+                play(p2);
                 break;
             default:
                 break;
@@ -97,9 +150,9 @@ public class Music extends AppCompatActivity{
     public void play(String path) {
 
         try {
-            //        重置音频文件，防止多次点击会报错
+
             mediaPlayer.reset();
-//        调用方法传进播放地址
+            //        调用方法传进播放地址
             mediaPlayer.setDataSource(path);
 //            异步准备资源，防止卡顿
             mediaPlayer.prepareAsync();
@@ -146,9 +199,7 @@ class Utils {
 
         if (cursor != null) {
             while (cursor.moveToNext()) {
-
                 song = new Song();
-
                 song.song = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
                 song.singer = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                 song.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
