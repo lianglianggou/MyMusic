@@ -75,7 +75,6 @@ public class Music extends AppCompatActivity{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String a=et.getText().toString();
-
                                 Intent intent=new Intent(Music.this,find.class);
                                 intent.putExtra("song",a);
                                 startActivity(intent);
@@ -146,6 +145,15 @@ public class Music extends AppCompatActivity{
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(Music.this,R.layout.support_simple_spinner_dropdown_item,songName);
         ListView listView=(ListView)findViewById(R.id.mylist);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String s=songName.get(position);
+                Intent intent=new Intent(Music.this,bofang.class);
+                intent.putExtra("name",s);
+                startActivity(intent);
+            }
+        });
         ItemOnLongClick1();
 
     }
@@ -292,7 +300,6 @@ public class Music extends AppCompatActivity{
 }
 
 class Song implements Serializable {
-
     public String song;//歌曲名
     public String singer;//歌手
     public long size;//歌曲所占空间大小

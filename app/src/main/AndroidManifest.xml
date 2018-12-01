@@ -24,6 +24,10 @@
         <activity
             android:name=".love"
             android:label="@string/title_activity_love"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".bofang"
+            android:label="@string/title_activity_bofang"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
