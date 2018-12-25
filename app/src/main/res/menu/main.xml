@@ -7,5 +7,4 @@
         android:id="@+id/love"
         android:title="收藏夹" />
 
-
 </menu>

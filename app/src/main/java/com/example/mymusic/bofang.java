@@ -32,11 +32,9 @@ public class bofang extends AppCompatActivity {
     private SeekBar seekBar;
     private Timer timer;
     public class MySeekBar implements SeekBar.OnSeekBarChangeListener {
-
         public void onProgressChanged(SeekBar seekBar, int progress,
                                       boolean fromUser) {
         }
-
         /*滚动时,应当暂停后台定时器*/
         public void onStartTrackingTouch(SeekBar seekBar) {
             isSeekBarChanging = true;
@@ -86,7 +84,6 @@ public class bofang extends AppCompatActivity {
                 }else{
                     mediaPlayer.start();
                 }
-
             }
         });
         bn=(Button)findViewById(R.id.back);
@@ -97,12 +94,9 @@ public class bofang extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
     public void play(String path) {
-
         try {
-
             mediaPlayer.reset();
             //        调用方法传进播放地址
             mediaPlayer.setDataSource(path);
@@ -127,66 +121,41 @@ public class bofang extends AppCompatActivity {
                     }
                 }
             },0,50);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
     public void stop(String path) {
-
         try {
-
             mediaPlayer.reset();
             //        调用方法传进播放地址
             mediaPlayer.setDataSource(path);
-//
             mediaPlayer.stop();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
     public void pause(String path) {
-
         try {
-
             mediaPlayer.reset();
             //        调用方法传进播放地址
             mediaPlayer.setDataSource(path);
 //            异步准备资源，防止卡顿
-
-
                 mediaPlayer.pause();
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
     public void restar(String path) {
-
         try {
-
             mediaPlayer.reset();
             //        调用方法传进播放地址
             mediaPlayer.setDataSource(path);
 //            异步准备资源，防止卡顿
-
-
             mediaPlayer.start();
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
 

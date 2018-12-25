@@ -34,7 +34,6 @@ public class find extends AppCompatActivity {
     ListView mylist;
     List<Song> list;
     ArrayList<String> songName=new ArrayList<>();
-
     private boolean isSeekBarChanging;//互斥变量，防止进度条与定时器冲突。
     private int currentPosition;//当前音乐播放的进度
     private SeekBar seekBar;
@@ -44,7 +43,6 @@ public class find extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -79,11 +77,9 @@ public class find extends AppCompatActivity {
         super.onDestroy();
     }
     public class MySeekBar implements SeekBar.OnSeekBarChangeListener {
-
         public void onProgressChanged(SeekBar seekBar, int progress,
                                       boolean fromUser) {
         }
-
         /*滚动时,应当暂停后台定时器*/
         public void onStartTrackingTouch(SeekBar seekBar) {
             isSeekBarChanging = true;
@@ -94,27 +90,20 @@ public class find extends AppCompatActivity {
             mediaPlayer.seekTo(seekBar.getProgress());
         }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find);
         seekBar = (SeekBar) findViewById(R.id.playSeekBar);
         seekBar.setOnSeekBarChangeListener(new MySeekBar());
-
         Intent intent = getIntent();
         String name = intent.getStringExtra("song");
-
         Toast.makeText(this, name, Toast.LENGTH_LONG).show();
         mylist = (ListView) findViewById(R.id.mylist);
-
         list = new ArrayList<>();
-
         list = Utils.getmusic(this);
         int count=list.size();
         String aa=name;
-
-
         for(int z=0;z<count;z++){
             String bb=list.get(0).song;
             if(aa.equals(bb)) {
@@ -130,7 +119,6 @@ public class find extends AppCompatActivity {
         ItemOnLongClick1();
 
     }
-
     private void ItemOnLongClick1() {
         mylist = (ListView) findViewById(R.id.mylist);
         mylist.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
@@ -143,11 +131,8 @@ public class find extends AppCompatActivity {
                 menu.add(0, 3, 0, "暂停");
             }
         });
-
     }
-
     public boolean onContextItemSelected(MenuItem item) {
-
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
                 .getMenuInfo();
         int MID = (int) info.id;// 这里的info.id对应的就是数据库中_id的值
@@ -162,7 +147,6 @@ public class find extends AppCompatActivity {
             case 2:
                 boolean loop1 = mediaPlayer.isLooping();
                 mediaPlayer.setLooping(!loop1);
-
                 break;
             case 3:
                 if (mediaPlayer.isPlaying()) {
@@ -174,12 +158,9 @@ public class find extends AppCompatActivity {
             default:
                 break;
         }
-
         return super.onContextItemSelected(item);
-
     }
     public void play(String path) {
-
         try {
 
             mediaPlayer.reset();
@@ -192,7 +173,6 @@ public class find extends AppCompatActivity {
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
                     mp.seekTo(currentPosition);
-
                     seekBar.setMax(mediaPlayer.getDuration());
                 }
             });
@@ -206,12 +186,9 @@ public class find extends AppCompatActivity {
                     }
                 }
             },0,50);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
 

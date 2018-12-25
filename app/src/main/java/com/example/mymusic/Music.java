@@ -47,7 +47,6 @@ public class Music extends AppCompatActivity{
     ArrayList<String> songName=new ArrayList<>();
     MyDatabaseHelper dbmemo;
     Button bn;
-
     private boolean isSeekBarChanging;//互斥变量，防止进度条与定时器冲突。
     private int currentPosition;//当前音乐播放的进度
     private SeekBar seekBar;
@@ -57,10 +56,8 @@ public class Music extends AppCompatActivity{
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()){
             case R.id.find:
                 final EditText et = new EditText(this);
@@ -78,15 +75,12 @@ public class Music extends AppCompatActivity{
                                 Intent intent=new Intent(Music.this,find.class);
                                 intent.putExtra("song",a);
                                 startActivity(intent);
-
                             }
                         }).setNegativeButton("取消",null).show();
                 break;
             case R.id.love:
                                 Intent intent=new Intent(Music.this,love.class);
                                 startActivity(intent);
-
-
             default:
         }
         return true;
@@ -99,11 +93,8 @@ public class Music extends AppCompatActivity{
         super.onDestroy();
     }
     public class MySeekBar implements SeekBar.OnSeekBarChangeListener {
-
-        public void onProgressChanged(SeekBar seekBar, int progress,
-                                      boolean fromUser) {
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         }
-
         /*滚动时,应当暂停后台定时器*/
         public void onStartTrackingTouch(SeekBar seekBar) {
             isSeekBarChanging = true;
@@ -121,26 +112,19 @@ public class Music extends AppCompatActivity{
         mylist = (ListView) findViewById(R.id.mylist);
         seekBar = (SeekBar) findViewById(R.id.playSeekBar);
         seekBar.setOnSeekBarChangeListener(new MySeekBar());
-
-
         dbmemo=new MyDatabaseHelper(this,"love1.db",null,1);
         /*
         bn=(Button)findViewById(R.id.create);
         bn.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View view) {
                 dbmemo.getWritableDatabase();
             }
         });*/
         list = new ArrayList<>();
-
         list = Utils.getmusic(this);
         for(int z=0;z<list.size();z++){
-
-
                 songName.add(list.get(z).song);
-
         }
         ArrayAdapter<String> adapter=new ArrayAdapter<String>(Music.this,R.layout.support_simple_spinner_dropdown_item,songName);
         ListView listView=(ListView)findViewById(R.id.mylist);
@@ -155,7 +139,6 @@ public class Music extends AppCompatActivity{
             }
         });
         ItemOnLongClick1();
-
     }
     public class MyDatabaseHelper extends SQLiteOpenHelper {
         public static final String CREATE_LOVE = "create table love1 ("
@@ -182,9 +165,7 @@ public class Music extends AppCompatActivity{
     private void ItemOnLongClick1() {
         mylist = (ListView) findViewById(R.id.mylist);
         mylist.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-
-            public void onCreateContextMenu(ContextMenu menu, View v,
-                                            ContextMenu.ContextMenuInfo menuInfo) {
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
                 menu.add(0, 0, 0, "播放");
                 menu.add(0, 1, 0, "停止");
                 menu.add(0, 2, 0, "循环");
@@ -196,13 +177,11 @@ public class Music extends AppCompatActivity{
         });
     }
     public boolean onContextItemSelected(MenuItem item) {
-
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
                 .getMenuInfo();
         int MID = (int) info.id;// 这里的info.id对应的就是数据库中_id的值
         switch (item.getItemId()) {
             case 0:
-
                 String p = list.get(MID).path;//获得歌曲的地址
                 play(p);
                 break;
@@ -216,8 +195,6 @@ public class Music extends AppCompatActivity{
                 }else{
                     mediaPlayer.setLooping(!loop1);
                 }
-
-
                 break;
             case 3:
                 if (mediaPlayer.isPlaying()) {
@@ -235,39 +212,29 @@ public class Music extends AppCompatActivity{
                 play(p2);
                 break;
             case 6:
-
                 String a=songName.get(MID);
                 String[] where={a};
-
                 SQLiteDatabase db = dbmemo.getWritableDatabase();
                 // Cursor cursor = db.query("WordTable",null,null,null,null,null,null);
                 Cursor cursor =  db.query("love1",new String[]{"song"},"song=?",where,null,null,null);
-
                 if(cursor.moveToFirst()){
                     Toast.makeText(Music.this,"已收藏",Toast.LENGTH_SHORT).show();
                     cursor.close();
-
                 }else{
-
                     ContentValues values=new ContentValues();
                     values.put("song",a);
                     db.insert("love1",null,values);
                     Toast.makeText(Music.this,"收藏成功",Toast.LENGTH_SHORT).show();}
-
                 break;
             default:
                 break;
         }
-
         return super.onContextItemSelected(item);
-
     }
     public void play(String path) {
-
         try {
-
             mediaPlayer.reset();
-            //        调用方法传进播放地址
+            //调用方法传进播放地址
             mediaPlayer.setDataSource(path);
 //            异步准备资源，防止卡顿
             mediaPlayer.prepareAsync();
@@ -276,7 +243,6 @@ public class Music extends AppCompatActivity{
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
                     mp.seekTo(currentPosition);
-
                     seekBar.setMax(mediaPlayer.getDuration());
                 }
             });
@@ -290,12 +256,9 @@ public class Music extends AppCompatActivity{
                     }
                 }
             },0,50);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
 
@@ -308,23 +271,14 @@ class Song implements Serializable {
 
 }
 
-
 class Utils {
     //定义一个集合，存放从本地读取到的内容
     public static List<Song> list;
-
-
     public static Song song;
-
-
     public static List<Song> getmusic(Context context) {
-
         list = new ArrayList<>();
-
-
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
                 , null, null, null, MediaStore.Audio.AudioColumns.IS_MUSIC);
-
         if (cursor != null) {
             while (cursor.moveToNext()) {
                 song = new Song();
@@ -333,8 +287,6 @@ class Utils {
                 song.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
                 song.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
                 song.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
-//              把歌曲名字和歌手切割开
-
                 if (song.size > 1000 * 800) {
                     if (song.song.contains("-")) {
                         String[] str = song.song.split("-");
@@ -346,12 +298,10 @@ class Utils {
 
             }
         }
-
         cursor.close();
         return list;
 
     }
-
 
     //    转换歌曲时间的格式
     public static String formatTime(int time) {

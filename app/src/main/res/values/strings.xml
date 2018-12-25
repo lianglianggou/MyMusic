@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyMusic</string>
+    <string name="app_name">傻瓜音乐播放器</string>
     <string name="title_activity_find">find</string>
     <string name="title_activity_love">love</string>
     <string name="title_activity_bofang">bofang</string>
