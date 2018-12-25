@@ -295,7 +295,6 @@ class Utils {
                     }
                     list.add(song);
                 }
-
             }
         }
         cursor.close();
